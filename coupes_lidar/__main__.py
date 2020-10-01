@@ -5,13 +5,11 @@ import numpy as np
 import serial.tools.list_ports
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, FigureCanvasAgg
 from matplotlib.figure import Figure
-from Lidar import Lidar
+from coupes_lidar.Lidar import Lidar
 import time
 import csv
 
-listeSerie = lambda: serial.tools.list_ports.comports()
 
-listePorts = listeSerie()
 
 
 def draw_figure(canvas, figure, loc=(0, 0)):
@@ -21,9 +19,13 @@ def draw_figure(canvas, figure, loc=(0, 0)):
     return figure_canvas_agg
 
 
-if __name__ == "__main__":
+def main():
     sg.theme('LightGrey1')
     while True: #Choix des paramètres du Lidar
+
+        listeSerie = lambda: serial.tools.list_ports.comports()
+
+        listePorts = listeSerie()
 
         layoutParam = [
             [
@@ -47,6 +49,7 @@ if __name__ == "__main__":
                 sg.Button('Ok',size=(10, 1)),sg.Button('Annuler',size=(10, 1))
             ]
                 ]
+        
 
         windowParam = sg.Window('Connexion Lidar', layoutParam)
         baud,port,dossier = None,None,""
@@ -61,7 +64,6 @@ if __name__ == "__main__":
                 nbr = values['nbr']
             except:
                 pass
-
 
             if port == None:
                 sg.Popup("Choisir un port")
