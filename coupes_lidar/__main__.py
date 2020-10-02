@@ -2,24 +2,80 @@ import sys
 from os import path,access,W_OK
 import PySimpleGUI as sg
 import serial.tools.list_ports
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, FigureCanvasAgg
-from matplotlib.figure import Figure
 from coupes_lidar.Lidar import Lidar
 from time import sleep
 from csv import writer
+from math import cos,sin,pi
+
+def create_circle(x, y, r, canvas,**kwargs):
+    x0 = x - r
+    y0 = y - r
+    x1 = x + r
+    y1 = y + r
+    return canvas.create_oval(x0, y0, x1, y1,**kwargs)
+
+def convertrCoordonesCanvas(x,y,hauteur=500,largeur=500,rMax=8,marge=20):
+    l = largeur/2
+    h = hauteur/2
+    return (((x/rMax)*l)+l+marge,h-((y/rMax)*h)+marge)
+
+def dessinerEchelle(canvas,hauteur=500,largeur=500,rMax=8,marge=20):
+    #Cercle
+    X,Y = convertrCoordonesCanvas(0,0,hauteur,largeur,rMax,marge)
+    create_circle(X,Y,min(hauteur,largeur)/2,canvas,width=0,fill="#eee")
+    
+    #Axes
+    X1,Y1 = convertrCoordonesCanvas(-rMax,0,hauteur,largeur,rMax,marge)
+    X2,Y2 = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge)
+    canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
+    X1,Y1 = convertrCoordonesCanvas(0,-rMax,hauteur,largeur,rMax,marge)
+    X2,Y2 = convertrCoordonesCanvas(0,rMax,hauteur,largeur,rMax,marge)
+    canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
+
+    #Graduations
+    for x in range(-rMax,rMax+1):
+        X1,Y1 = convertrCoordonesCanvas(x,-0.2,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(x,0.2,hauteur,largeur,rMax,marge)
+        canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
+    for y in range(-rMax,rMax+1):
+        X1,Y1 = convertrCoordonesCanvas(-0.2,y,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(0.2,y,hauteur,largeur,rMax,marge)
+        canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
+
+    #Texte limmite axes
+    X,Y = convertrCoordonesCanvas(0,rMax,hauteur,largeur,rMax,marge)
+    canvas.create_text(X+12,Y, text=str(rMax), fill="#555",font=('Helvetica', '11'))
+    X,Y = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge)
+    canvas.create_text(X,Y-15, text=str(rMax), fill="#555",font=('Helvetica', '11'))
+
+    #Angles
+    for a in range(0,360,15):
+        a_rad = a*pi/180
+        d = rMax
+        d2 = rMax+0.5
+        X1,Y1 = convertrCoordonesCanvas(0,0,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(d*cos(a_rad),d*sin(a_rad),hauteur,largeur,rMax,marge)
+        X3,Y3 = convertrCoordonesCanvas(d2*cos(a_rad),d2*sin(a_rad),hauteur,largeur,rMax,marge)
+        canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
+        canvas.create_text(X3,Y3, text=str(a)+"°", fill="#777",font=('Helvetica', '10'))
 
 
+def dessinerPoints(canvas,angle,dist,largeur=500,hauteur=500,rMax = 8,marge=20):
+    x = dist*cos(angle)
+    y = dist*sin(angle)
+    X,Y = convertrCoordonesCanvas(x,y,hauteur,largeur,rMax,marge)
 
+    create_circle(X,Y,1,canvas,width=0,fill="#0074e8")
 
-def draw_figure(canvas, figure, loc=(0, 0)):
-    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
-    figure_canvas_agg.draw()
-    figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
-    return figure_canvas_agg
 
 
 def main():
     sg.theme('LightGrey1')
+    LARGEUR = 500
+    HAUTEUR = 500
+    RMAX = 8
+    MARGE = 30
+
     while True: #Choix des paramètres du Lidar
 
         listeSerie = lambda: serial.tools.list_ports.comports()
@@ -91,7 +147,7 @@ def main():
     
     while True:
         layoutScan = [
-                [sg.Canvas(size=(640, 480), key='canvas')],
+                [sg.Canvas(size=(LARGEUR+2*MARGE, HAUTEUR+2*MARGE), key='canvas')],
                 [sg.Text('Nom du fichier :', size=(16, 1)),sg.Input(size=(30, 1),key="nomFichier")],
                 [sg.Button('Enregistrer', size=(10, 1)),sg.Button('Annuler', size=(10, 1))]
                     ]
@@ -102,12 +158,7 @@ def main():
         
         canvas_elem = windowScan['canvas']
         canvas = canvas_elem.TKCanvas
-
-        fig = Figure()
-        ax = fig.add_subplot(111, projection='polar')
-        ax.set_rlim(0,8)
-        fig_agg = draw_figure(canvas, fig)
-        
+        canvas.delete("all")
         lidar.start()
 
         while True:
@@ -132,12 +183,11 @@ def main():
                         except OSError:
                                 sg.Popup("Le fichier ne peut pas être créé à cet emplacement.\nPermissions non accordées ou nom non valide")
                     
-
-            ax.cla()
-            ax.set_rlim(0,8)
-
-            ax.plot(data[0],data[1],'o',markersize=1)
-            fig_agg.draw()
+            canvas.delete("all")
+            dessinerEchelle(canvas,LARGEUR,HAUTEUR,RMAX,MARGE)
+            for a,d in zip(data[0],data[1]):
+                dessinerPoints(canvas,a,d,LARGEUR,HAUTEUR,RMAX,MARGE)
+           
 
         try:
             lidar.join()

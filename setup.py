@@ -6,8 +6,8 @@ import subprocess
 
 build_exe_options = {
     "packages": ["os"],
-    'zip_include_packages':["numpy"],
-    "excludes": ["Tkinter","Tkinter"],
+    'zip_include_packages':[],
+    "excludes": ["Tkinter","Tkinter","matplotlib",'numpy'],
     "includes": [],
     "include_files":[
         'C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/DLLs/tcl86t.dll',
