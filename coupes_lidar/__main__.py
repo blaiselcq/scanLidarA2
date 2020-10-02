@@ -1,13 +1,12 @@
 import sys
 from os import path,access,W_OK
 import PySimpleGUI as sg
-import numpy as np
 import serial.tools.list_ports
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, FigureCanvasAgg
 from matplotlib.figure import Figure
 from coupes_lidar.Lidar import Lidar
-import time
-import csv
+from time import sleep
+from csv import writer
 
 
 
@@ -148,10 +147,10 @@ def main():
         windowScan.close()
 
 
-        time.sleep(5)
+        sleep(5)
 
         with open(nomComplet, 'w',newline='') as fichierData:
-            spamwriter = csv.writer(fichierData, delimiter=',',dialect='excel')
+            spamwriter = writer(fichierData, delimiter=',',dialect='excel')
             spamwriter.writerow(['Angle']+ ['Distance'])
             for j in range(len(data[0])):
                 spamwriter.writerow([data[0][j],data[1][j]])

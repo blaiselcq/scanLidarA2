@@ -1,13 +1,20 @@
 import sys,os
 from cx_Freeze import setup, Executable
+import subprocess
 
 # Dependencies are automatically detected, but it might need fine tuning.
-build_exe_options = {"packages": ["os"], "excludes": ["Tkinter","Tkinter"],
-"include_files":[
-    'C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/DLLs/tcl86t.dll',
-     'C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/DLLs/tk86t.dll',
-     "C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/Lib/site-packages/mpl_toolkits",
-     ]}
+
+build_exe_options = {
+    "packages": ["os"],
+    'zip_include_packages':["numpy"],
+    "excludes": ["Tkinter","Tkinter"],
+    "includes": [],
+    "include_files":[
+        'C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/DLLs/tcl86t.dll',
+        'C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/DLLs/tk86t.dll',
+        "C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/Lib/site-packages/mpl_toolkits",
+        ]
+}
 
 # GUI applications require a different base on Windows (the default is for a
 # console application).

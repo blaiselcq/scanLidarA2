@@ -1,6 +1,6 @@
 from threading import Thread
 from rplidar import RPLidar
-import time
+from time import sleep
 from math import pi
 
 class Lidar(Thread):
@@ -21,7 +21,7 @@ class Lidar(Thread):
         self.limit = limit
     
     def run(self):
-        time.sleep(1)
+        sleep(1)
         try:
             for measurment in self.lidar.iter_measurments(max_buf_meas=self.limit):
                 s = len(self.data[0])
@@ -51,5 +51,5 @@ if __name__ == "__main__":
 
     lidar = Lidar("COM13",115200,data)
     lidar.start()
-    time.sleep(10)
+    sleep(10)
     lidar.join()
