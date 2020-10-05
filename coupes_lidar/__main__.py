@@ -19,7 +19,7 @@ def convertrCoordonesCanvas(x,y,hauteur=500,largeur=500,rMax=8,marge=20):
     h = hauteur/2
     return (((x/rMax)*l)+l+marge,h-((y/rMax)*h)+marge)
 
-def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,hauteur=500,largeur=500,rMax=8,marge=20,decalageBas=0,decalageHaut=0,decalageTexte=0.07):
+def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,sousGrille=False,hauteur=500,largeur=500,rMax=8,marge=20,decalageBas=0,decalageHaut=0,decalageTexte=0.07):
     if grilleAngle:
         #Fond
         X,Y = convertrCoordonesCanvas(0,0,hauteur,largeur,rMax,marge)
@@ -43,6 +43,16 @@ def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,hauteur=500,lar
         X2,Y2 = convertrCoordonesCanvas(rMax,rMax,hauteur,largeur,rMax,marge)
         canvas.create_rectangle(X1,Y1,X2,Y2,width=0,fill="#eee")
 
+        if sousGrille:
+            for x in [_/sousGrille for _ in range(-rMax*sousGrille,rMax*sousGrille+1)]:
+                X1,Y1 = convertrCoordonesCanvas(x,-rMax,hauteur,largeur,rMax,marge)
+                X2,Y2 = convertrCoordonesCanvas(x,rMax,hauteur,largeur,rMax,marge)
+                canvas.create_line(X1,Y1,X2,Y2,fill='#ccc',dash=(4, 1))
+            for y in [_/sousGrille for _ in range(-rMax*sousGrille,rMax*sousGrille+1)]:
+                X1,Y1 = convertrCoordonesCanvas(-rMax,y,hauteur,largeur,rMax,marge)
+                X2,Y2 = convertrCoordonesCanvas(rMax,y,hauteur,largeur,rMax,marge)
+                canvas.create_line(X1,Y1,X2,Y2,fill='#ccc',dash=(4, 1))
+
         for x in range(-rMax,rMax+1):
             X1,Y1 = convertrCoordonesCanvas(x,-rMax,hauteur,largeur,rMax,marge)
             X2,Y2 = convertrCoordonesCanvas(x,rMax,hauteur,largeur,rMax,marge)
@@ -51,6 +61,9 @@ def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,hauteur=500,lar
             X1,Y1 = convertrCoordonesCanvas(-rMax,y,hauteur,largeur,rMax,marge)
             X2,Y2 = convertrCoordonesCanvas(rMax,y,hauteur,largeur,rMax,marge)
             canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
+        
+        
+        
 
     #Axes
     X1,Y1 = convertrCoordonesCanvas(-rMax,0,hauteur,largeur,rMax,marge)
@@ -77,13 +90,14 @@ def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,hauteur=500,lar
     canvas.create_text(X,Y-15, text=str(rMax), fill="#555",font=('Helvetica', '11'))
 
 
-def dessinerPoints(canvas,angle,dist,cacherLoin = False,largeur=500,hauteur=500,rMax=8,marge=20): 
-    if not cacherLoin:
+def dessinerPoints(canvas,angle,dist,grilleAngle=True,grilleDistance=False,largeur=500,hauteur=500,rMax=8,marge=20): 
+    if grilleDistance:
         x = dist*cos(angle)
         y = dist*sin(angle)
-        X,Y = convertrCoordonesCanvas(x,y,hauteur,largeur,rMax,marge)
-        create_circle(X,Y,1,canvas,width=0,fill="#0074e8")
-    elif cacherLoin and dist < rMax:
+        if x < rMax and y < rMax:
+            X,Y = convertrCoordonesCanvas(x,y,hauteur,largeur,rMax,marge)
+            create_circle(X,Y,1,canvas,width=0,fill="#0074e8")
+    elif grilleAngle and dist < rMax:
         x = dist*cos(angle)
         y = dist*sin(angle)
         X,Y = convertrCoordonesCanvas(x,y,hauteur,largeur,rMax,marge)
@@ -119,8 +133,8 @@ def main():
             ],
             [
                 sg.Text('Dossier cible :', size=(16, 1)),
-                sg.Input(size=(52, 1),key="dossier"),
-                sg.FolderBrowse(size=(6,1),target="dossier")
+                sg.Input(size=(50, 1),key="dossier"),
+                sg.FolderBrowse(size=(8,1),target="dossier",button_text="Naviguer",)
             ],
             [
                 sg.Button('Ok',size=(10, 1)),sg.Button('Annuler',size=(10, 1))
@@ -170,8 +184,9 @@ def main():
     while True:
 
         colOptions = [
-                [sg.Text('Grille',size=(10,1)),sg.Combo(values=["Angulaire","Linéaire","Aucune"],default_value="Angulaire",size=(10,1),key="grille")],
-                [sg.Text('Distance Max',size=(10,1)),sg.Spin(values=[_+1 for _ in range(10)],initial_value=RMAX,size=(10,1),key="max")]
+                [sg.Text('Grille',size=(12,1)),sg.Combo(values=["Angulaire","Linéaire","Aucune"],default_value="Angulaire",size=(10,1),key="grille")],
+                [sg.Text('Grille secondaire',size=(12,1)),sg.Combo(values=["1/10","1/5","1/2","Aucune"],default_value="Aucune",size=(10,1),key="sousGrille")],
+                [sg.Text('Distance max',size=(12,1)),sg.Spin(values=[_+1 for _ in range(10)],initial_value=RMAX,size=(10,1),key="max")]
                     ]
 
         layoutScan = [
@@ -213,13 +228,15 @@ def main():
             
             rMax = values['max']
             grilleAngle,grilleDistance = False,False
-            grilleAngle =  values['grille'] == "Angulaire"
-            grilleDistance =  values['grille'] == "Linéaire"
+            grilleAngle = values['grille'] == "Angulaire"
+            grilleDistance = values['grille'] == "Linéaire"
+            corespondanceSousGrille = {'Aucune':False,'1/10':10,'1/5':5,'1/2':2}
+            sousGrille = corespondanceSousGrille[values['sousGrille']]
                     
             canvas.delete("all")
-            dessinerEchelle(canvas,grilleAngle=grilleAngle,grilleDistance=grilleDistance,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE)
+            dessinerEchelle(canvas,grilleAngle=grilleAngle,grilleDistance=grilleDistance,sousGrille=sousGrille,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE)
             for a,d in zip(data[0],data[1]):
-                dessinerPoints(canvas,a,d,cacherLoin=grilleAngle,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE)
+                dessinerPoints(canvas,a,d,grilleAngle=grilleAngle,grilleDistance=grilleDistance,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE)
            
 
         try:
