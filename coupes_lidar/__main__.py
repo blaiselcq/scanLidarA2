@@ -19,11 +19,39 @@ def convertrCoordonesCanvas(x,y,hauteur=500,largeur=500,rMax=8,marge=20):
     h = hauteur/2
     return (((x/rMax)*l)+l+marge,h-((y/rMax)*h)+marge)
 
-def dessinerEchelle(canvas,hauteur=500,largeur=500,rMax=8,marge=20):
-    #Cercle
-    X,Y = convertrCoordonesCanvas(0,0,hauteur,largeur,rMax,marge)
-    create_circle(X,Y,min(hauteur,largeur)/2,canvas,width=0,fill="#eee")
+def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,hauteur=500,largeur=500,rMax=8,marge=20,decalageBas=0,decalageHaut=0,decalageTexte=0.07):
+    if grilleAngle:
+        #Fond
+        X,Y = convertrCoordonesCanvas(0,0,hauteur,largeur,rMax,marge)
+        create_circle(X,Y,min(hauteur,largeur)/2,canvas,width=0,fill="#eee")
+
+        #Grille Angulaire
+        for a in range(0,360,15):
+            a_rad = a*pi/180
+            m = rMax*decalageBas
+            d = rMax*(1-decalageHaut)
+            d2 = rMax*(1+decalageTexte)
+            X1,Y1 = convertrCoordonesCanvas(m*cos(a_rad),m*sin(a_rad),hauteur,largeur,rMax,marge)
+            X2,Y2 = convertrCoordonesCanvas(d*cos(a_rad),d*sin(a_rad),hauteur,largeur,rMax,marge)
+            X3,Y3 = convertrCoordonesCanvas(d2*cos(a_rad),d2*sin(a_rad),hauteur,largeur,rMax,marge)
+            canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
+            canvas.create_text(X3,Y3, text=str(a)+"°", fill="#777",font=('Helvetica', '10'))
     
+    elif grilleDistance:
+        #Fond
+        X1,Y1 = convertrCoordonesCanvas(-rMax,-rMax,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(rMax,rMax,hauteur,largeur,rMax,marge)
+        canvas.create_rectangle(X1,Y1,X2,Y2,width=0,fill="#eee")
+
+        for x in range(-rMax,rMax+1):
+            X1,Y1 = convertrCoordonesCanvas(x,-rMax,hauteur,largeur,rMax,marge)
+            X2,Y2 = convertrCoordonesCanvas(x,rMax,hauteur,largeur,rMax,marge)
+            canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
+        for y in range(-rMax,rMax+1):
+            X1,Y1 = convertrCoordonesCanvas(-rMax,y,hauteur,largeur,rMax,marge)
+            X2,Y2 = convertrCoordonesCanvas(rMax,y,hauteur,largeur,rMax,marge)
+            canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
+
     #Axes
     X1,Y1 = convertrCoordonesCanvas(-rMax,0,hauteur,largeur,rMax,marge)
     X2,Y2 = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge)
@@ -34,12 +62,12 @@ def dessinerEchelle(canvas,hauteur=500,largeur=500,rMax=8,marge=20):
 
     #Graduations
     for x in range(-rMax,rMax+1):
-        X1,Y1 = convertrCoordonesCanvas(x,-0.2,hauteur,largeur,rMax,marge)
-        X2,Y2 = convertrCoordonesCanvas(x,0.2,hauteur,largeur,rMax,marge)
+        X1,Y1 = convertrCoordonesCanvas(x,-0.02*rMax,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(x,0.02*rMax,hauteur,largeur,rMax,marge)
         canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
     for y in range(-rMax,rMax+1):
-        X1,Y1 = convertrCoordonesCanvas(-0.2,y,hauteur,largeur,rMax,marge)
-        X2,Y2 = convertrCoordonesCanvas(0.2,y,hauteur,largeur,rMax,marge)
+        X1,Y1 = convertrCoordonesCanvas(-0.02*rMax,y,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(0.02*rMax,y,hauteur,largeur,rMax,marge)
         canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
 
     #Texte limmite axes
@@ -48,24 +76,18 @@ def dessinerEchelle(canvas,hauteur=500,largeur=500,rMax=8,marge=20):
     X,Y = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge)
     canvas.create_text(X,Y-15, text=str(rMax), fill="#555",font=('Helvetica', '11'))
 
-    #Angles
-    for a in range(0,360,15):
-        a_rad = a*pi/180
-        d = rMax
-        d2 = rMax+0.5
-        X1,Y1 = convertrCoordonesCanvas(0,0,hauteur,largeur,rMax,marge)
-        X2,Y2 = convertrCoordonesCanvas(d*cos(a_rad),d*sin(a_rad),hauteur,largeur,rMax,marge)
-        X3,Y3 = convertrCoordonesCanvas(d2*cos(a_rad),d2*sin(a_rad),hauteur,largeur,rMax,marge)
-        canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
-        canvas.create_text(X3,Y3, text=str(a)+"°", fill="#777",font=('Helvetica', '10'))
 
-
-def dessinerPoints(canvas,angle,dist,largeur=500,hauteur=500,rMax = 8,marge=20):
-    x = dist*cos(angle)
-    y = dist*sin(angle)
-    X,Y = convertrCoordonesCanvas(x,y,hauteur,largeur,rMax,marge)
-
-    create_circle(X,Y,1,canvas,width=0,fill="#0074e8")
+def dessinerPoints(canvas,angle,dist,cacherLoin = False,largeur=500,hauteur=500,rMax=8,marge=20): 
+    if not cacherLoin:
+        x = dist*cos(angle)
+        y = dist*sin(angle)
+        X,Y = convertrCoordonesCanvas(x,y,hauteur,largeur,rMax,marge)
+        create_circle(X,Y,1,canvas,width=0,fill="#0074e8")
+    elif cacherLoin and dist < rMax:
+        x = dist*cos(angle)
+        y = dist*sin(angle)
+        X,Y = convertrCoordonesCanvas(x,y,hauteur,largeur,rMax,marge)
+        create_circle(X,Y,1,canvas,width=0,fill="#0074e8")
 
 
 
@@ -146,8 +168,14 @@ def main():
 
     
     while True:
+
+        colOptions = [
+                [sg.Text('Grille',size=(10,1)),sg.Combo(values=["Angulaire","Linéaire","Aucune"],default_value="Angulaire",size=(10,1),key="grille")],
+                [sg.Text('Distance Max',size=(10,1)),sg.Spin(values=[_+1 for _ in range(10)],initial_value=RMAX,size=(10,1),key="max")]
+                    ]
+
         layoutScan = [
-                [sg.Canvas(size=(LARGEUR+2*MARGE, HAUTEUR+2*MARGE), key='canvas')],
+                [sg.Canvas(size=(LARGEUR+2*MARGE, HAUTEUR+2*MARGE), key='canvas'),sg.VerticalSeparator(),sg.Column(colOptions,vertical_alignment='top')],
                 [sg.Text('Nom du fichier :', size=(16, 1)),sg.Input(size=(30, 1),key="nomFichier")],
                 [sg.Button('Enregistrer', size=(10, 1)),sg.Button('Annuler', size=(10, 1))]
                     ]
@@ -166,7 +194,7 @@ def main():
             if event == 'Annuler' or event == sg.WIN_CLOSED:
                 lidar.join()
                 sys.exit()
-            elif event == "Enregistrer":
+            elif event == "Enregistrer": 
                 nomFichier = values['nomFichier']
 
                 if nomFichier == "" or nomFichier == None:
@@ -182,11 +210,16 @@ def main():
                             break
                         except OSError:
                                 sg.Popup("Le fichier ne peut pas être créé à cet emplacement.\nPermissions non accordées ou nom non valide")
+            
+            rMax = values['max']
+            grilleAngle,grilleDistance = False,False
+            grilleAngle =  values['grille'] == "Angulaire"
+            grilleDistance =  values['grille'] == "Linéaire"
                     
             canvas.delete("all")
-            dessinerEchelle(canvas,LARGEUR,HAUTEUR,RMAX,MARGE)
+            dessinerEchelle(canvas,grilleAngle=grilleAngle,grilleDistance=grilleDistance,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE)
             for a,d in zip(data[0],data[1]):
-                dessinerPoints(canvas,a,d,LARGEUR,HAUTEUR,RMAX,MARGE)
+                dessinerPoints(canvas,a,d,cacherLoin=grilleAngle,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE)
            
 
         try:
