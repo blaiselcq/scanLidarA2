@@ -12,7 +12,6 @@ build_exe_options = {
     "include_files":[
         'C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/DLLs/tcl86t.dll',
         'C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/DLLs/tk86t.dll',
-        "C:/Users/b.lecoquil/AppData/Local/Programs/Python/Python38-32/Lib/site-packages/mpl_toolkits",
         ]
 }
 
@@ -28,5 +27,3 @@ setup(  name = "AppLidar",
         description = "Script pour la génération de scans lidar",
         options = {"build_exe": build_exe_options},
         executables = [Executable("AppLidar.py", base=base, icon="icone.ico")])
-
-#Il faut renommer le dossier "Tkinter/" de Lib/ en "tkinter/"
