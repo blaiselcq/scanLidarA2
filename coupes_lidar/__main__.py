@@ -182,13 +182,14 @@ def main():
         except Exception as error:
             print(error)
 
+    parametres_eregistres = {"grille":None,"secondaire":None,"distance":None}
     
     while True:
 
         colOptions = [
-                [sg.Text('Grille',size=(12,1)),sg.Combo(values=["Angulaire","Linéaire","Aucune"],default_value="Angulaire",size=(10,1),key="grille")],
-                [sg.Text('Grille secondaire',size=(12,1)),sg.Combo(values=["1/10","1/5","1/2","Aucune"],default_value="Aucune",size=(10,1),key="sousGrille")],
-                [sg.Text('Distance max',size=(12,1)),sg.Spin(values=[_+1 for _ in range(10)],initial_value=RMAX,size=(10,1),key="max")]
+                [sg.Text('Grille',size=(12,1)),sg.Combo(values=["Angulaire","Linéaire","Aucune"],default_value=("Angulaire",parametres_eregistres['grille'])[parametres_eregistres["grille"] != None],size=(10,1),key="grille")],
+                [sg.Text('Grille secondaire',size=(12,1)),sg.Combo(values=["1/10","1/5","1/2","Aucune"],default_value=("Aucune",parametres_eregistres['secondaire'])[parametres_eregistres["secondaire"] != None],size=(10,1),key="sousGrille")],
+                [sg.Text('Distance max',size=(12,1)),sg.Spin(values=[_+1 for _ in range(10)],initial_value=(RMAX,parametres_eregistres['distance'])[parametres_eregistres["distance"] != None],size=(10,1),key="max")]
                     ]
 
         layoutScan = [
@@ -239,7 +240,9 @@ def main():
             dessinerEchelle(canvas,grilleAngle=grilleAngle,grilleDistance=grilleDistance,sousGrille=sousGrille,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE)
             for a,d in zip(data[0],data[1]):
                 dessinerPoints(canvas,a,d,grilleAngle=grilleAngle,grilleDistance=grilleDistance,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE)
-           
+
+
+        parametres_eregistres = {"grille":values['grille'],"secondaire":values['sousGrille'],"distance":values['max']}
 
         try:
             lidar.join()
