@@ -87,7 +87,7 @@ def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,sousGrille=Fals
 
     #Texte limmite axes
     X,Y = convertrCoordonesCanvas(0,rMax,hauteur,largeur,rMax,marge)
-    canvas.create_text(X+12,Y, text=str(rMax)+" m", fill="#555",font=('Helvetica', '11'))
+    canvas.create_text(X+12,Y, text=str(rMax)+" m", fill="#555",font=('Helvetica', '11'), anchor = 'w')
     X,Y = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge)
     canvas.create_text(X,Y-15, text=str(rMax)+" m", fill="#555",font=('Helvetica', '11'))
 
