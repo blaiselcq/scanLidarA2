@@ -27,6 +27,6 @@ setup(  name = "AppLidar",
         version = "0.1",
         description = "Script pour la génération de scans lidar",
         options = {"build_exe": build_exe_options},
-        executables = [Executable("AppLidar.py", base=base)])
+        executables = [Executable("AppLidar.py", base=base, icon="icone.ico")])
 
 #Il faut renommer le dossier "Tkinter/" de Lib/ en "tkinter/"
