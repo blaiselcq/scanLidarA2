@@ -6,6 +6,8 @@ from coupes_lidar.Lidar import Lidar
 from time import sleep
 from csv import writer
 from math import cos,sin,pi
+import win32gui
+from PIL import ImageGrab
 
 def create_circle(x, y, r, canvas,**kwargs):
     x0 = x - r
@@ -85,9 +87,9 @@ def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,sousGrille=Fals
 
     #Texte limmite axes
     X,Y = convertrCoordonesCanvas(0,rMax,hauteur,largeur,rMax,marge)
-    canvas.create_text(X+12,Y, text=str(rMax), fill="#555",font=('Helvetica', '11'))
+    canvas.create_text(X+12,Y, text=str(rMax)+" m", fill="#555",font=('Helvetica', '11'))
     X,Y = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge)
-    canvas.create_text(X,Y-15, text=str(rMax), fill="#555",font=('Helvetica', '11'))
+    canvas.create_text(X,Y-15, text=str(rMax)+" m", fill="#555",font=('Helvetica', '11'))
 
 
 def dessinerPoints(canvas,angle,dist,grilleAngle=True,grilleDistance=False,largeur=500,hauteur=500,rMax=8,marge=20): 
@@ -243,6 +245,12 @@ def main():
             lidar.join()
         except Exception as e:
             print(e)
+
+        HWND = canvas.winfo_id()
+        rect = win32gui.GetWindowRect(HWND)
+        im = ImageGrab.grab(rect)
+        im.save(nomComplet[:-4]+".png")
+
 
         windowScan.close()
 
