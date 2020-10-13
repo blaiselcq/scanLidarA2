@@ -288,7 +288,7 @@ def main():
             for j in range(len(data[0])):
                 spamwriter.writerow([data[0][j],data[1][j]])
 
-        if sg.PopupOKCancel("Nouvelle mesure ?") != "OK":
+        if sg.PopupOKCancel("Nouvelle mesure ?",icon=r'icone.ico') != "OK":
             sys.exit()
 
         try:
