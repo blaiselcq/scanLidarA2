@@ -198,7 +198,7 @@ def main():
 
         colOptions = [
                 [sg.Text('Grille',size=(12,1)),sg.Combo(values=["Angulaire","Linéaire","Aucune"],default_value=("Angulaire",parametres_eregistres['grille'])[parametres_eregistres["grille"] != None],size=(10,1),key="grille")],
-                [sg.Text('Grille secondaire',size=(12,1)),sg.Combo(values=["1/10","1/5","1/2","Aucune"],default_value=("Aucune",parametres_eregistres['secondaire'])[parametres_eregistres["secondaire"] != None],size=(10,1),key="sousGrille")],
+                [sg.Text('Grille secondaire',size=(12,1),key="sousGrilleTexte"),sg.Combo(values=["1/10","1/5","1/2","Aucune"],default_value=("Aucune",parametres_eregistres['secondaire'])[parametres_eregistres["secondaire"] != None],size=(10,1),key="sousGrille")],
                 [sg.Text('Distance max',size=(12,1)),sg.Spin(values=[(_+1)/2 for _ in range(20)],initial_value=(RMAX,parametres_eregistres['distance'])[parametres_eregistres["distance"] != None],size=(10,1),key="max")],
                 [sg.Text('Rotation',size=(12,1)),sg.Spin(values=[_-360 for _ in range(2*360)],initial_value=(0,parametres_eregistres['rotation'])[parametres_eregistres["rotation"] != None],size=(10,1),key="rotation")]
                     ]
@@ -264,23 +264,23 @@ def main():
                 dessinerPoints(canvas,a,d,grilleAngle=grilleAngle,grilleDistance=grilleDistance,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE, rotation = rotationGrille)
 
 
-        parametres_eregistres = {"grille":rMax,"secondaire":sousGrille,"distance":values['max'],"rotation":rotationGrille}
+        parametres_eregistres = {"grille":values['grille'],"secondaire":values['sousGrille'],"distance":rMax,"rotation":rotationGrille}
 
         try:
             lidar.join()
         except Exception as e:
             print(e)
 
-        HWND = canvas.winfo_id()
-        rect = win32gui.GetWindowRect(HWND)
-        im = ImageGrab.grab(rect)
-        im.save(nomComplet[:-4]+".png")
+        box = (canvas.winfo_rootx(), canvas.winfo_rooty(), canvas.winfo_rootx() + canvas.winfo_width(), canvas.winfo_rooty() + canvas.winfo_height())
+        grab = ImageGrab.grab(bbox=box,include_layered_windows=True)
+        grab.save(nomComplet[:-4]+".png")
 
+        sleep(3)
 
         windowScan.close()
 
 
-        sleep(5)
+        sleep(2)
 
         with open(nomComplet, 'w',newline='') as fichierData:
             spamwriter = writer(fichierData, delimiter=',',dialect='excel')
