@@ -24,6 +24,7 @@ os.environ['TK_LIBRARY'] = "C:/Users/b.lecoquil/AppData/Local/Programs/Python/Py
 
 setup(  name = "AppLidar",
         version = "0.1",
+        author = "Blaise Le Coquil",
         description = "Script pour la génération de scans lidar",
         options = {"build_exe": build_exe_options},
         executables = [Executable("AppLidar.py", base=base, icon="icone.ico")])
