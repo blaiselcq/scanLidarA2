@@ -29,7 +29,7 @@ def convertrCoordonesCanvas(x,y,hauteur=500,largeur=500,rMax=8,marge=20,rotation
 def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,sousGrille=False,hauteur=500,largeur=500,rMax=8,marge=20,decalageBas=0,decalageHaut=0,decalageTexte=0.07,rotation=0):
     if grilleAngle:
         #Fond
-        X,Y = convertrCoordonesCanvas(0,0,hauteur,largeur,rMax,marge,rotation)
+        X,Y = convertrCoordonesCanvas(0,0,hauteur,largeur,rMax,marge)
         create_circle(X,Y,min(hauteur,largeur)/2,canvas,width=0,fill="#eee")
 
         #Grille Angulaire
@@ -38,70 +38,73 @@ def dessinerEchelle(canvas,grilleAngle=True,grilleDistance=False,sousGrille=Fals
             m = rMax*decalageBas
             d = rMax*(1-decalageHaut)
             d2 = rMax*(1+decalageTexte)
-            X1,Y1 = convertrCoordonesCanvas(m*cos(a_rad),m*sin(a_rad),hauteur,largeur,rMax,marge,rotation)
-            X2,Y2 = convertrCoordonesCanvas(d*cos(a_rad),d*sin(a_rad),hauteur,largeur,rMax,marge,rotation)
-            X3,Y3 = convertrCoordonesCanvas(d2*cos(a_rad),d2*sin(a_rad),hauteur,largeur,rMax,marge,rotation)
+            X1,Y1 = convertrCoordonesCanvas(m*cos(a_rad),m*sin(a_rad),hauteur,largeur,rMax,marge)
+            X2,Y2 = convertrCoordonesCanvas(d*cos(a_rad),d*sin(a_rad),hauteur,largeur,rMax,marge)
+            X3,Y3 = convertrCoordonesCanvas(d2*cos(a_rad),d2*sin(a_rad),hauteur,largeur,rMax,marge)
             canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
             canvas.create_text(X3,Y3, text=str(a)+"°", fill="#777",font=('Helvetica', '10'))
     
     elif grilleDistance:
         #Fond
-        X1,Y1 = convertrCoordonesCanvas(-rMax,-rMax,hauteur,largeur,rMax,marge,rotation)
-        X2,Y2 = convertrCoordonesCanvas(rMax,rMax,hauteur,largeur,rMax,marge,rotation)
+        X1,Y1 = convertrCoordonesCanvas(-rMax,-rMax,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(rMax,rMax,hauteur,largeur,rMax,marge)
         canvas.create_rectangle(X1,Y1,X2,Y2,width=0,fill="#eee")
 
         if sousGrille:
-            for x in [_/sousGrille for _ in range(-rMax*sousGrille,rMax*sousGrille+1)]:
-                X1,Y1 = convertrCoordonesCanvas(x,-rMax,hauteur,largeur,rMax,marge,rotation)
-                X2,Y2 = convertrCoordonesCanvas(x,rMax,hauteur,largeur,rMax,marge,rotation)
+            for x in [_/sousGrille for _ in range(-int(rMax)*sousGrille,int(rMax)*sousGrille+1)]:
+                X1,Y1 = convertrCoordonesCanvas(x,-rMax,hauteur,largeur,rMax,marge)
+                X2,Y2 = convertrCoordonesCanvas(x,rMax,hauteur,largeur,rMax,marge)
                 canvas.create_line(X1,Y1,X2,Y2,fill='#ccc',dash=(4, 1))
-            for y in [_/sousGrille for _ in range(-rMax*sousGrille,rMax*sousGrille+1)]:
-                X1,Y1 = convertrCoordonesCanvas(-rMax,y,hauteur,largeur,rMax,marge,rotation)
-                X2,Y2 = convertrCoordonesCanvas(rMax,y,hauteur,largeur,rMax,marge,rotation)
+            for y in [_/sousGrille for _ in range(-int(rMax)*sousGrille,int(rMax)*sousGrille+1)]:
+                X1,Y1 = convertrCoordonesCanvas(-rMax,y,hauteur,largeur,rMax,marge)
+                X2,Y2 = convertrCoordonesCanvas(rMax,y,hauteur,largeur,rMax,marge)
                 canvas.create_line(X1,Y1,X2,Y2,fill='#ccc',dash=(4, 1))
 
-        for x in range(-rMax,rMax+1):
-            X1,Y1 = convertrCoordonesCanvas(x,-rMax,hauteur,largeur,rMax,marge,rotation)
-            X2,Y2 = convertrCoordonesCanvas(x,rMax,hauteur,largeur,rMax,marge,rotation)
+        for x in range(int(-rMax),int(rMax)+1):
+            X1,Y1 = convertrCoordonesCanvas(x,-rMax,hauteur,largeur,rMax,marge)
+            X2,Y2 = convertrCoordonesCanvas(x,rMax,hauteur,largeur,rMax,marge)
             canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
-        for y in range(-rMax,rMax+1):
-            X1,Y1 = convertrCoordonesCanvas(-rMax,y,hauteur,largeur,rMax,marge,rotation)
-            X2,Y2 = convertrCoordonesCanvas(rMax,y,hauteur,largeur,rMax,marge,rotation)
+        for y in range(int(-rMax),int(rMax)+1):
+            X1,Y1 = convertrCoordonesCanvas(-rMax,y,hauteur,largeur,rMax,marge)
+            X2,Y2 = convertrCoordonesCanvas(rMax,y,hauteur,largeur,rMax,marge)
             canvas.create_line(X1,Y1,X2,Y2,fill='#ccc')
         
         
         
 
     #Axes
-    X1,Y1 = convertrCoordonesCanvas(-rMax,0,hauteur,largeur,rMax,marge,rotation)
-    X2,Y2 = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge,rotation)
+    X1,Y1 = convertrCoordonesCanvas(-rMax,0,hauteur,largeur,rMax,marge)
+    X2,Y2 = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge)
     canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
-    X1,Y1 = convertrCoordonesCanvas(0,-rMax,hauteur,largeur,rMax,marge,rotation)
-    X2,Y2 = convertrCoordonesCanvas(0,rMax,hauteur,largeur,rMax,marge,rotation)
+    X1,Y1 = convertrCoordonesCanvas(0,-rMax,hauteur,largeur,rMax,marge)
+    X2,Y2 = convertrCoordonesCanvas(0,rMax,hauteur,largeur,rMax,marge)
     canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
 
     #Graduations
-    for x in range(-rMax,rMax+1):
-        X1,Y1 = convertrCoordonesCanvas(x,-0.02*rMax,hauteur,largeur,rMax,marge,rotation)
-        X2,Y2 = convertrCoordonesCanvas(x,0.02*rMax,hauteur,largeur,rMax,marge,rotation)
+    for x in range(int(-rMax),int(rMax)+1):
+        X1,Y1 = convertrCoordonesCanvas(x,-0.02*rMax,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(x,0.02*rMax,hauteur,largeur,rMax,marge)
         canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
-    for y in range(-rMax,rMax+1):
-        X1,Y1 = convertrCoordonesCanvas(-0.02*rMax,y,hauteur,largeur,rMax,marge,rotation)
-        X2,Y2 = convertrCoordonesCanvas(0.02*rMax,y,hauteur,largeur,rMax,marge,rotation)
+    for y in range(int(-rMax),int(rMax+1)):
+        X1,Y1 = convertrCoordonesCanvas(-0.02*rMax,y,hauteur,largeur,rMax,marge)
+        X2,Y2 = convertrCoordonesCanvas(0.02*rMax,y,hauteur,largeur,rMax,marge)
         canvas.create_line(X1,Y1,X2,Y2,fill='#aaa')
 
     #Texte limmite axes
-    X,Y = convertrCoordonesCanvas(0,rMax,hauteur,largeur,rMax,marge,rotation)
+    X,Y = convertrCoordonesCanvas(0,rMax,hauteur,largeur,rMax,marge)
     canvas.create_text(X+12,Y, text=str(rMax)+" m", fill="#555",font=('Helvetica', '11'), anchor = 'w')
-    X,Y = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge,rotation)
+    X,Y = convertrCoordonesCanvas(rMax,0,hauteur,largeur,rMax,marge)
     canvas.create_text(X,Y-15, text=str(rMax)+" m", fill="#555",font=('Helvetica', '11'))
 
 
 def dessinerPoints(canvas,angle,dist,grilleAngle=True,grilleDistance=False,largeur=500,hauteur=500,rMax=8,marge=20,rotation=0): 
     if grilleDistance:
+        rotRad = rotation*pi/180
         x = dist*cos(angle)
         y = dist*sin(angle)
-        if x < rMax and y < rMax:
+        xx = x*cos(rotRad) - y*sin(rotRad)
+        yy = y*cos(rotRad) + x*sin(rotRad)
+        if xx < rMax and yy < rMax:
             X,Y = convertrCoordonesCanvas(x,y,hauteur,largeur,rMax,marge,rotation)
             create_circle(X,Y,1,canvas,width=0,fill="#0074e8")
     elif grilleAngle and dist < rMax:
@@ -116,7 +119,7 @@ def main():
     sg.theme('LightGrey1')
     LARGEUR = 500
     HAUTEUR = 500
-    RMAX = 8
+    RMAX = 8.0
     MARGE = 30
 
     while True: #Choix des paramètres du Lidar
@@ -149,7 +152,7 @@ def main():
                 ]
         
 
-        windowParam = sg.Window('Connexion Lidar', layoutParam)
+        windowParam = sg.Window('Connexion Lidar',icon=r'icone.ico', layout = layoutParam)
         baud,port,dossier = None,None,""
         while True:
             event, values = windowParam.Read()
@@ -164,13 +167,13 @@ def main():
                 pass
 
             if port == None:
-                sg.Popup("Choisir un port")
+                sg.Popup("Choisir un port",icon=r'icone.ico')
             elif baud not in [115200, 256000]:
-                sg.Popup("Mauvaise valeur de baud")
+                sg.Popup("Mauvaise valeur de baud",icon=r'icone.ico')
             elif not path.isdir(dossier):
-                sg.Popup("Choisir un dossier valide")
+                sg.Popup("Choisir un dossier valide",icon=r'icone.ico')
             elif type(nbr) != int or nbr not in range(1,10000):
-                sg.Popup("Choisir un nombre de points valide")
+                sg.Popup("Choisir un nombre de points valide",icon=r'icone.ico')
             else: 
                 break
                 
@@ -189,12 +192,14 @@ def main():
 
     parametres_eregistres = {"grille":None,"secondaire":None,"distance":None,"rotation":None}
     
+    rMax = RMAX
+
     while True:
 
         colOptions = [
                 [sg.Text('Grille',size=(12,1)),sg.Combo(values=["Angulaire","Linéaire","Aucune"],default_value=("Angulaire",parametres_eregistres['grille'])[parametres_eregistres["grille"] != None],size=(10,1),key="grille")],
                 [sg.Text('Grille secondaire',size=(12,1)),sg.Combo(values=["1/10","1/5","1/2","Aucune"],default_value=("Aucune",parametres_eregistres['secondaire'])[parametres_eregistres["secondaire"] != None],size=(10,1),key="sousGrille")],
-                [sg.Text('Distance max',size=(12,1)),sg.Spin(values=[_+1 for _ in range(10)],initial_value=(RMAX,parametres_eregistres['distance'])[parametres_eregistres["distance"] != None],size=(10,1),key="max")],
+                [sg.Text('Distance max',size=(12,1)),sg.Spin(values=[(_+1)/2 for _ in range(20)],initial_value=(RMAX,parametres_eregistres['distance'])[parametres_eregistres["distance"] != None],size=(10,1),key="max")],
                 [sg.Text('Rotation',size=(12,1)),sg.Spin(values=[_-360 for _ in range(2*360)],initial_value=(0,parametres_eregistres['rotation'])[parametres_eregistres["rotation"] != None],size=(10,1),key="rotation")]
                     ]
                 
@@ -206,7 +211,7 @@ def main():
                     ]
         
 
-        windowScan = sg.Window('Scan Lidar', layoutScan)
+        windowScan = sg.Window('Scan Lidar', layout=layoutScan,icon=r'icone.ico')
         windowScan.Finalize()
         
         canvas_elem = windowScan['canvas']
@@ -223,25 +228,34 @@ def main():
                 nomFichier = values['nomFichier']
 
                 if nomFichier == "" or nomFichier == None:
-                    sg.Popup("Entrer un nom de ficher")
+                    sg.Popup("Entrer un nom de ficher",icon=r'icone.ico')
                 else:
                     nomComplet = path.join(dossier,nomFichier+'.csv').replace('/','\\')
                     if path.exists(nomComplet):
-                        sg.Popup("Le fichier existe déjà")
+                        sg.Popup("Le fichier existe déjà",icon=r'icone.ico')
                     else:
                         try:
                             with open(nomComplet, 'x') as tempfile:
                                 pass
                             break
                         except OSError:
-                                sg.Popup("Le fichier ne peut pas être créé à cet emplacement.\nPermissions non accordées ou nom non valide")
-            rMax = values['max']
+                                sg.Popup("Le fichier ne peut pas être créé à cet emplacement.\nPermissions non accordées ou nom non valide",icon=r'icone.ico')
+            
+            try:
+                rMax = float(str(values['max']).replace(',','.'))
+            except:
+                pass
             grilleAngle,grilleDistance = False,False
             grilleAngle = values['grille'] == "Angulaire"
             grilleDistance = values['grille'] == "Linéaire"
-            rotationGrille = values['rotation']
+            try:
+                rotationGrille = float(str(values['rotation']).replace(',','.'))
+            except:
+                pass
             corespondanceSousGrille = {'Aucune':False,'1/10':10,'1/5':5,'1/2':2}
-            sousGrille = corespondanceSousGrille[values['sousGrille']]
+            try:
+                sousGrille = corespondanceSousGrille[values['sousGrille']]
+            except: sousGrille = False
                     
             canvas.delete("all")
             dessinerEchelle(canvas,grilleAngle=grilleAngle,grilleDistance=grilleDistance,sousGrille=sousGrille,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE,
@@ -250,7 +264,7 @@ def main():
                 dessinerPoints(canvas,a,d,grilleAngle=grilleAngle,grilleDistance=grilleDistance,largeur=LARGEUR,hauteur=HAUTEUR,rMax=rMax,marge=MARGE, rotation = rotationGrille)
 
 
-        parametres_eregistres = {"grille":values['grille'],"secondaire":values['sousGrille'],"distance":values['max'],"rotation":values['rotation']}
+        parametres_eregistres = {"grille":rMax,"secondaire":sousGrille,"distance":values['max'],"rotation":rotationGrille}
 
         try:
             lidar.join()
